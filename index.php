@@ -3,7 +3,6 @@
 	$UserController = new UserController();
 
 	$users = $UserController->get();
-	echo json_encode($users);
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +31,7 @@
 			    </ul>
 			    <form class="form-inline my-2 my-lg-0">
 			      	<input class="form-control mr-sm-2" type="search" placeholder="Escribe aquí..." aria-label="Search">
-			     	<button class="btn btn-primary my-2 my-sm-0" type="submit">Buscar</button>
+			     	<button class="btn btn-primary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i> Buscar</button>
 			 	</form>
 			</div>
 		</nav>
@@ -43,11 +42,33 @@
 		  	</ol>
 		</nav>
 
+		<?php if (isset($_SESSION['status']) && $_SESSION['status']=="success"):?>
+
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+		  <strong>Éxito!</strong> <?= $_SESSION['message'] ?>.
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+
+		<?php unset($_SESSION['status']); endif ?>
+
+		<?php if (isset($_SESSION['status']) && $_SESSION['status']=="error"):?>
+
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		  <strong>Error!</strong> <?= $_SESSION['message'] ?>.
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+
+		<?php unset($_SESSION['status']); endif ?>
+
 		<div class="card mb-4">
 		  <div class="card-header">
 		    Lista de usuarios registrados
 		    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#staticBackdrop">
-		    	Añadir usuario
+		    	<i class="fas fa-user-plus"></i> Añadir usuario
 		    </button>
 		  </div>
 		  <div class="card-body">
@@ -55,26 +76,41 @@
 			  <thead>
 			    <tr>
 			      <th scope="col">#</th>
-			      <th scope="col">First</th>
-			      <th scope="col">Last</th>
-			      <th scope="col">Handle</th>
+			      <th scope="col">Nombre</th>
+			      <th scope="col">Correo electrónico</th>
+			      <th scope="col">Estado</th>
+			      <th scope="col">Acciones</th>
 			    </tr>
 			  </thead>
 			  <tbody>
+
+			  	<?php if(isset($users) && count($users)>0): ?>
+			  	<?php foreach ($users as $user): ?>
+
 			    <tr>
-			      <th scope="row">1</th>
-			      <td>Mark</td>
-			      <td>Otto</td>
-			      <td>@mdo</td>
-			      <td style="float: right;">
+			      <th scope="row"> <?= $user['id'] ?> </th>
+			      <td> <?= $user['name'] ?> </td>
+			      <td> <?= $user['email'] ?> </td>
+			      <td> 
+			      	<?php if($user['status']==1): ?>
+			      	<span class="badge badge-success">Activo</span> 
+			      	<?php else: ?>
+			      		<span class="badge badge-danger">Inactivo</span>
+			      	<?php endif ?>
+			      </td>
+			      <td>
 						<button type="button" class="btn btn-warning">
-							<i class="fa fa-pencil"></i> Editar
+							<i class="fas fa-edit"></i> Editar
 						</button>
-						<button type="button" onclick="remove(1)" class="btn btn-warning">
+						<button type="button" onclick="remove(1)" class="btn btn-danger">
 							<i class="fa fa-trash"></i> Eliminar
 						</button>
 					</td>
 			    </tr>
+
+				<?php endforeach ?>
+				<?php endif ?>
+
 			  </tbody>
 			</table>
 		  </div>
@@ -91,14 +127,14 @@
 	        </button>
 	      </div>
 	      	  <div class="modal-body">
-	        	  <form onsubmit="return validateRegister()">
+	        	  <form method="POST" action="UserController.php" onsubmit="return validateRegister()">
 	        	  	<div class="form-group">
 						<label for="name">Nombre completo</label>
         	  			<div class="input-group mb-3">
         	  					<div class="input-group-prepend">
         	  						<span class="input-group-text"><i class="fas fa-user"></i></span>		
         	  					</div>
-						    	<input type="text" class="form-control" id="name" aria-describedby="emailHelp" required="">
+						    	<input type="text" name="name" class="form-control" id="name" aria-describedby="name" required="" placeholder="Samwise Gamgee">
         	  			</div>
         	  			<small id="email" class="form-text text-muted">Ingresar sólo letras.</small>
 					  </div>
@@ -108,7 +144,7 @@
         	  					<div class="input-group-prepend">
         	  						<span class="input-group-text"><i class="fas fa-envelope"></i></span>		
         	  					</div>
-						    	<input type="email" class="form-control" id="email" aria-describedby="emailHelp" required="">
+						    	<input type="email" name="email" class="form-control" id="email" aria-describedby="email" required="" placeholder="example@domain.com">
         	  			</div>
 					    
 					  </div>
@@ -118,7 +154,7 @@
         	  					<div class="input-group-prepend">
         	  						<span class="input-group-text"><i class="fas fa-lock"></i></span>		
         	  					</div>
-						    	<input type="password" class="form-control" id="password1" required="">
+						    	<input type="password" name="password" class="form-control" id="password1" required="" placeholder="passwordExample123">
         	  			</div>
 					    
 					  </div>
@@ -128,13 +164,14 @@
         	  					<div class="input-group-prepend">
         	  						<span class="input-group-text"><i class="fas fa-check-double"></i></span>		
         	  					</div>
-						    	<input type="password" class="form-control" id="password2" required="">
+						    	<input type="password" class="form-control" id="password2" required="" placeholder="passwordExample123">
         	  			</div>
 					    
 					  </div>
 					  <div class="modal-footer">
-		          		<button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
-		          		<button type="submit" class="btn btn-primary">Guardar</button>
+		          		<button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
+		          		<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+		          		<input type="hidden" name="action" value="store">
 		      		  </div>
 					</form>
 		      </div>
