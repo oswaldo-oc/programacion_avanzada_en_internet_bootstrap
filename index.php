@@ -14,6 +14,8 @@
 </head>
 <body>
 	<div class="container">
+
+		<!-- NAVBAR -->
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<a class="navbar-brand" href="#">Lord of the Rings</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,12 +38,15 @@
 			</div>
 		</nav>
 
+		<!-- BREAD -->
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item active" aria-current="page">Inicio</li>
 		  	</ol>
 		</nav>
 
+
+		<!-- ALERTAS -->
 		<?php if (isset($_SESSION['status']) && $_SESSION['status']=="success"):?>
 
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -64,6 +69,7 @@
 
 		<?php unset($_SESSION['status']); endif ?>
 
+		<!-- TABLA -->
 		<div class="card mb-4">
 		  <div class="card-header">
 		    Lista de usuarios registrados
@@ -117,6 +123,7 @@
 		</div>
 	</div>
 
+	<!-- MODAL -->
 	<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
