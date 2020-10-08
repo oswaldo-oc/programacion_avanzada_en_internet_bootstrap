@@ -73,7 +73,7 @@
 		<div class="card mb-4">
 		  <div class="card-header">
 		    Lista de usuarios registrados
-		    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#staticBackdrop">
+		    <button onclick="reset()" type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#staticBackdrop">
 		    	<i class="fas fa-user-plus"></i> Añadir usuario
 		    </button>
 		  </div>
@@ -105,10 +105,10 @@
 			      	<?php endif ?>
 			      </td>
 			      <td>
-						<button type="button" class="btn btn-warning">
+						<button data-info='<?= json_encode($user) ?>' data-toggle="modal" data-target="#staticBackdrop" type="button" class="btn btn-warning" onclick="editar(this)">
 							<i class="fas fa-edit"></i> Editar
 						</button>
-						<button type="button" onclick="remove(1)" class="btn btn-danger">
+						<button onclick="remove(1)" type="button" class="btn btn-danger">
 							<i class="fa fa-trash"></i> Eliminar
 						</button>
 					</td>
@@ -134,7 +134,7 @@
 	        </button>
 	      </div>
 	      	  <div class="modal-body">
-	        	  <form method="POST" action="UserController.php" onsubmit="return validateRegister()">
+	        	  <form id="myForm" method="POST" action="UserController.php" onsubmit="return validateRegister()">
 	        	  	<div class="form-group">
 						<label for="name">Nombre completo</label>
         	  			<div class="input-group mb-3">
@@ -143,7 +143,7 @@
         	  					</div>
 						    	<input type="text" name="name" class="form-control" id="name" aria-describedby="name" required="" placeholder="Samwise Gamgee">
         	  			</div>
-        	  			<small id="email" class="form-text text-muted">Ingresar sólo letras.</small>
+        	  			<small class="form-text text-muted">Ingresar sólo letras.</small>
 					  </div>
 					  <div class="form-group">
 					    <label for="email">Correo electrónico</label>
@@ -153,7 +153,6 @@
         	  					</div>
 						    	<input type="email" name="email" class="form-control" id="email" aria-describedby="email" required="" placeholder="example@domain.com">
         	  			</div>
-					    
 					  </div>
 					  <div class="form-group">
 					    <label for="exampleInputPassword1">Contraseña</label>
@@ -173,17 +172,15 @@
         	  					</div>
 						    	<input type="password" class="form-control" id="password2" required="" placeholder="passwordExample123">
         	  			</div>
-					    
 					  </div>
 					  <div class="modal-footer">
 		          		<button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
 		          		<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
-		          		<input type="hidden" name="action" value="store">
+		          		<input type="hidden" name="id" id="id" value="id">
+		          		<input type="hidden" name="action" id="action" value="store">
 		      		  </div>
 					</form>
 		      </div>
-
-
 	    </div>
 	  </div>
 	</div>
@@ -194,7 +191,7 @@
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script type="text/javascript">
 		function validateRegister() {
-			console.log(1)
+			
 			if($("#password1").val() == $("#password2").val()) {
 				return true;
 			}else {
@@ -206,7 +203,20 @@
 			}
 		}
 
-		function remove(id){
+		function editar(target) {
+
+			var info =  $(target).data('info')
+
+			$("#id").val(info.id)
+			$("#name").val(info.name)
+			$("#email").val(info.email)
+			$("#password1").val(info.password)
+			$("#password2").val(info.password)
+			$("#action").val('update')
+		}
+
+		function remove(id) {
+			
 			swal({
 				title: "",
 				text: "¿Desea eliminar el usuario?",
@@ -222,6 +232,11 @@
 					});
 				}
 			});
+		}
+
+		function reset() {
+			$("#action").val('store')
+			document.getElementById("myForm").reset();
 		}
 	</script>
 </body>

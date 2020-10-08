@@ -16,7 +16,18 @@
 
 				$userController->store($name,$email,$password);
 
-				break;
+			break;
+
+			case 'update':
+				
+				$id = strip_tags($_POST['id']);
+				$name = strip_tags($_POST['name']);
+				$email = strip_tags($_POST['email']);
+				$password = strip_tags($_POST['password']);
+
+				$userController->update($id,$name,$email,$password);
+
+			break;
 		}
 	}
 
@@ -56,23 +67,62 @@
 					if ($prepared_query->execute()) {
 
 						$_SESSION['status'] = "success";
-						$_SESSION['status'] = "Usuario registrado";
+						$_SESSION['message'] = "El usuario se ha registrado correctamente";
 						header('Location: ' . $_SERVER['HTTP_REFERER']);
 					} else {
 						$_SESSION['status'] = "error";
-						$_SESSION['status'] = "Usuario no registrado";
+						$_SESSION['message'] = "El usuario no se ha registrado";
+						header('Location: ' . $_SERVER['HTTP_REFERER']);
 					}
 				} else {
 
 					$_SESSION['status'] = "error";
-					$_SESSION['status'] = "Verifique la información ingresada";
+					$_SESSION['message'] = "Verifique la información ingresada";
 					header('Location: ' . $_SERVER['HTTP_REFERER']);
 				}
 
 			} else {
 
 				$_SESSION['status'] = "error";
-				$_SESSION['status'] = "Error de conexión";
+				$_SESSION['message'] = "Error de conexión";
+				header('Location: ' . $_SERVER['HTTP_REFERER']);
+			}
+		}
+
+		public function update($id, $name, $email, $password) {
+
+			$conn = connect();
+
+			if(!$conn->connect_error) {
+
+				if($id!="" && $name!="" && $email!="" && $password!="") {
+
+					$query = "update users set name = ?, email = ?, password = ? where id = ?";
+					$prepared_query = $conn->prepare($query);
+					$prepared_query->bind_param('sssi',$name,$email,$password,$id);
+					var_dump($prepared_query);
+
+					if ($prepared_query->execute()) {
+
+						$_SESSION['status'] = "success";
+						$_SESSION['message'] = "El usuario se ha actualizado correctamente";
+						header('Location: ' . $_SERVER['HTTP_REFERER']);
+					} else {
+						$_SESSION['status'] = "error";
+						$_SESSION['message'] = "El usuario no se ha actualizado";
+						header('Location: ' . $_SERVER['HTTP_REFERER']);
+					}
+				} else {
+
+					$_SESSION['status'] = "error";
+					$_SESSION['message'] = "Verifique la información ingresada";
+					header('Location: ' . $_SERVER['HTTP_REFERER']);
+				}
+
+			} else {
+
+				$_SESSION['status'] = "error";
+				$_SESSION['message'] = "Error de conexión";
 				header('Location: ' . $_SERVER['HTTP_REFERER']);
 			}
 		}
