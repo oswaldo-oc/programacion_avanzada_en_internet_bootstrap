@@ -108,7 +108,7 @@
 						<button data-info='<?= json_encode($user) ?>' data-toggle="modal" data-target="#staticBackdrop" type="button" class="btn btn-warning" onclick="editar(this)">
 							<i class="fas fa-edit"></i> Editar
 						</button>
-						<button onclick="remove(1)" type="button" class="btn btn-danger">
+						<button onclick="remove(<?= $user['id'] ?>, this)" type="button" class="btn btn-danger">
 							<i class="fa fa-trash"></i> Eliminar
 						</button>
 					</td>
@@ -134,7 +134,7 @@
 	        </button>
 	      </div>
 	      	  <div class="modal-body">
-	        	  <form id="myForm" method="POST" action="UserController.php" onsubmit="return validateRegister()">
+	        	  <form id="myForm" method="POST" action="users" onsubmit="return validateRegister()">
 	        	  	<div class="form-group">
 						<label for="name">Nombre completo</label>
         	  			<div class="input-group mb-3">
@@ -178,6 +178,7 @@
 		          		<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
 		          		<input type="hidden" name="id" id="id" value="id">
 		          		<input type="hidden" name="action" id="action" value="store">
+		          		<input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
 		      		  </div>
 					</form>
 		      </div>
@@ -186,6 +187,7 @@
 	</div>
 
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js" type="text/javascript"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -215,7 +217,7 @@
 			$("#action").val('update')
 		}
 
-		function remove(id) {
+		function remove(id, target) {
 			
 			swal({
 				title: "",
@@ -227,11 +229,31 @@
 			})
 			.then( (willDelete) => {
 				if ( willDelete ){
-					swal("Usuario eliminado con exito!", {
-						icon: "success",
-					});
+
+					$.ajax({
+						url:'users',
+						type: 'POST',
+						dataType: 'json',
+						data:{action: 'remove', user_id:id, token:'<?= $_SESSION['token'] ?>'},
+						success: function(json) {
+							if(json.status == 'success') {
+								swal(json.message, {
+									icon: "success",
+								})
+								$(target).parent().parent().remove()
+							}else {
+								swal(json.message, {
+									icon: "error",
+								})
+							}
+						},
+						error: function(xhr,status) {
+							//console.log(xhr)
+							//console.log(status)
+						}
+					})
 				}
-			});
+			})
 		}
 
 		function reset() {
